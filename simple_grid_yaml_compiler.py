@@ -49,7 +49,7 @@ def phase_5(phase_4_output, runtime_vars, yaml):
         if data_section == 'lightweight_components':
             updated_components = []
             for lightweight_component in data[data_section]:
-                print "Component: " + lightweight_component['name']
+                print ("Component: " + lightweight_component['name'])
                 updated_component = {}
                 for component_section in lightweight_component:
                     if component_section == 'config':
@@ -96,7 +96,7 @@ def phase_6(phase_5_output_file, yaml):
     container_split_config = yaml_augmentation.split_container_config(variable_hierarchies)
     #pass 4
     with_ids =  yaml_augmentation.add_execution_ids(container_split_config)
-    print with_ids
+    print (with_ids)
     yaml.dump(with_ids, phase_6_output_file)
     return phase_6_output_file
 
