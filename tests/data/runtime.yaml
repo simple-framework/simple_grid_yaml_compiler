@@ -1,0 +1,503 @@
+cream_runtime_variables:
+  - &cream_runtime_var_ce_host lightweight_component01.cern.ch
+pbs_runtime_variables:
+  - &pbs_runtime_var_ce_host lightweight_component01.cern.ch
+meta_info_cream-ce:
+    component : "Cream-CE"
+    type: compute_element
+    version : 1.2
+    docker_hub_tag : ""
+    primary_config_key: "cream-info"
+    site_level_config_version: 1.0
+    default_var_prefix: cream_default_var
+    runtime_vars:
+      - cream_runtime_var_ce_host
+    host_requirements:
+      firewall:
+        - ports: 22
+          protocol: tcp
+          action: accept
+          ipv6: true
+        - ports: 8443
+          protocol: tcp
+          action: accept
+          ipv6: false
+        - ports: 20000-21000
+          protocol: tcp
+          action: accept
+          ipv6: false
+        - ports: 49152
+          protocol: tcp
+          action: accept
+          ipv6: false
+        - ports: 49155
+          protocol: tcp
+          action: accept
+          ipv6: false
+        - ports: 49152
+          protocol: tcp
+          action: accept
+          ipv6: false
+        - ports: 9002
+          protocol: tcp
+          action: accept
+          ipv6: false
+        - ports: 9002
+          protocol: tcp
+          action: accept
+          ipv6: false
+        - ports: 9002
+          protocol: tcp
+          action: accept
+          ipv6: false
+        - ports: 9001
+          protocol: tcp
+          action: accept
+          ipv6: false
+        - ports: 3306
+          protocol: tcp
+          action: accept
+          ipv6: false
+        - ports: 2170
+          protocol: tcp
+          action: accept
+          ipv6: false
+        - ports: 33333
+          protocol: tcp
+          action: accept
+          ipv6: false
+        - ports: 56565
+          protocol: tcp
+          action: accept
+          ipv6: false
+        - ports: 56554
+          protocol: tcp
+          action: accept
+          ipv6: false
+        - ports: 40559
+          protocol: tcp
+          action: accept
+          ipv6: false
+    
+      cvmfs: true
+      host_certificates: true
+      
+    docker_run_parameters:
+      privileged: true
+      hostname: *cream_runtime_var_ce_host
+      ports:
+        - "8443:8443"
+        - "2811:2811"
+        - "20000-21000:20000-21000"
+        - "49152:49152"
+        - "49155:49155"
+        - "9002:9002"
+        - "9001:9001"
+        - "3306:3306"
+        - "2170:2170"
+        - "33333:33333"
+        - "56565:56565"
+        - "56554:56554"
+        - "40559:40559"
+      tty: true
+      interactive: true
+      detached: true
+      mount:
+        source: /cvmfs
+        target: /cvmfs
+        type: bind
+      command: /bin/bash
+
+meta_info_wn-pbs:
+    #General Component Desciption
+    component : "WN-Pbs"
+    type: worker_node
+    version : 2.5.13
+    docker_hub_url : ""
+    primary_config_key: "pbs-info"
+    site_level_config_version: 1.0
+    default_var_prefix: "pbs_default_var"
+    runtime_vars:
+      - pbs_runtime_var_ce_host
+    host_requirements:
+     "firewall":
+        - ports: 8080
+          protocol: tcp
+          action: accept
+          ipv6: true 
+     
+        - ports: 6543
+          protocol: tcp
+          action: accept
+          ipv6: false
+     "cvmfs": true
+     
+    docker_run_parameters:
+      "privileged": true
+      "mount": "wn-pbs" 
+    
+
+
+default_vo_generic_dn_ca_cern: &default_vo_generic_dn_ca_cern '/DC=ch/DC=cern/CN=CERN Grid Certification Authority'
+default_vo_generic_dn_server_primary: &default_vo_generic_dn_server_primary '/DC=ch/DC=cern/OU=computers/CN=voms2.cern.ch'
+default_vo_generic_dn_server_secondary: &default_vo_generic_dn_server_secondary '/DC=ch/DC=cern/OU=computers/CN=lcg-voms2.cern.ch'
+default_vo_generic_server_primary: &default_vo_generic_server_primary 'voms2.cern.ch'
+default_vo_generic_server_secondary: &default_vo_generic_server_secondary 'lcg-voms2.cern.ch'
+
+## defaults for supported_virtual_organizations
+default_vo_alice: &default_vo_alice
+  name: alice
+  servers:
+    - server: *default_vo_generic_server_primary #voms2.cern.ch
+      port: '15000'
+      dn: *default_vo_generic_dn_server_primary #'/DC=ch/DC=cern/OU=computers/CN=voms2.cern.ch'
+      ca_dn: *default_vo_generic_dn_ca_cern #'/DC=ch/DC=cern/CN=CERN Grid Certification Authority'
+    - server: *default_vo_generic_server_secondary
+      port: '15000'
+      dn: *default_vo_generic_dn_server_secondary
+      ca_dn: *default_vo_generic_dn_ca_cern
+  default_se: not_used.some-domain
+  sw_dir: '.'
+  storage_dir: "/not/used"
+
+default_vo_ops: &default_vo_ops
+  name: ops
+  servers:
+    - server: *default_vo_generic_server_primary
+      port: '15009'
+      dn: *default_vo_generic_dn_server_primary
+      ca_dn: *default_vo_generic_dn_ca_cern
+    - server: *default_vo_generic_server_secondary
+      port: '15009'
+      dn: *default_vo_generic_dn_server_secondary
+      ca_dn: *default_vo_generic_dn_ca_cern
+  default_se: not_used.some-domain
+  sw_dir: '.'
+  storage_dir: "/storage/ops"
+  
+default_vo_dteam: &default_vo_dteam
+  name: dteam
+  servers:
+    - server: *default_vo_generic_server_primary
+      port: '15001'
+      dn: *default_vo_generic_dn_server_primary
+      ca_dn: *default_vo_generic_dn_ca_cern
+    - server: *default_vo_generic_server_secondary
+      port: '15001'
+      dn: *default_vo_generic_dn_server_secondary
+      ca_dn: *default_vo_generic_dn_ca_cern
+  default_se: not_used.some-domain
+  sw_dir: '.'
+  storage_dir: "/storage/dteam"
+
+
+##default values for group names
+default_group_alice_name: &default_group_alice_name alice
+default_group_alicesgm_name: &default_group_alicesgm_name alicesgm
+default_group_dteam_name: &default_group_dteam_name dteam
+default_group_dteamsgm_name: &default_group_dteamsgm_name dteamsgm
+default_group_ops_name: &default_group_ops_name ops
+default_group_opssgm_name: &default_group_opssgm_name opssgm
+
+##default values for groups
+default_group_alice: &default_group_alice
+  gid: 1395
+  name: *default_group_alice_name
+
+default_group_alicesgm: &default_group_alicesgm
+  gid: 1397
+  name: *default_group_alicesgm_name
+
+default_group_dteam: &default_group_dteam
+  gid: 2688
+  name: *default_group_dteam_name
+
+default_group_dteamsgm: &default_group_dteamsgm
+  gid: 2680
+  name: *default_group_dteamsgm_name
+
+default_group_ops: &default_group_ops
+  gid: 45000
+  name: *default_group_ops_name
+
+default_group_opssgm: &default_group_opssgm
+  gid: 46001
+  name: *default_group_opssgm_name
+
+# default pool accounts
+default_pool_accounts_alice: &default_pool_accounts_alice
+  base_name: 'alice'
+  initial_uid: 10417
+  users_num: 5
+  primary_group: *default_group_alice
+  secondary_groups: []
+
+default_pool_accounts_alicesgm: &default_pool_accounts_alicesgm
+  base_name: 'sgmali'
+  initial_uid: 60101
+  users_num: 10
+  primary_group: *default_group_alicesgm
+  secondary_groups:
+    - *default_group_alice
+
+default_pool_accounts_dteam: &default_pool_accounts_dteam
+  base_name: 'dteam'
+  initial_uid: 18118
+  users_num: 10
+  primary_group: *default_group_dteam
+  secondary_groups: []
+  
+default_pool_accounts_dteamsgm: &default_pool_accounts_dteamsgm
+  base_name: 'sgmdtm'
+  initial_uid: 60501
+  users_num: 5
+  primary_group: *default_group_dteamsgm
+  secondary_groups:
+    - *default_group_dteam
+
+default_pool_account_ops: &default_pool_accounts_ops  
+  base_name: 'ops'
+  initial_uid: 45001
+  users_num: 10
+  primary_group: *default_group_ops
+  secondary_groups: []
+
+default_pool_account_opssgm: &default_pool_accounts_opssgm
+  base_name: 'sgmops'
+  initial_uid: 60701
+  users_num: 10
+  primary_group: *default_group_ops
+  secondary_groups: 
+    - *default_group_opssgm
+
+
+cream-ce-expected-from-site-level-config:
+    cream_default_var_globus_tcp_port_range: &cream_default_var_globus_tcp_port_range {
+        begin: 20000,
+        end: 21000
+    }
+    cream_default_var_ce_capability: &cream_default_var_ce_capability "CPUScalingReferenceSI00=1000"
+    cream_default_var_ce_cpu_model: &cream_default_var_ce_cpu_model Xeon
+    cream_default_var_ce_cpu_speed: &cream_default_var_ce_cpu_speed 2800
+    cream_default_var_ce_cpu_vendor: &cream_default_var_ce_cpu_vendor intel
+    cream_default_var_ce_inboundip: &cream_default_var_ce_inboundip false
+    cream_default_var_ce_logcpu: &cream_default_var_ce_logcpu 0
+    cream_default_var_ce_minphysmem: &cream_default_var_ce_minphysmem 2000
+    cream_default_var_ce_minvirtmem: &cream_default_var_ce_minvirtmem 8192
+    #cream_default_var_ce_os: &cream_default_var_ce_os ScientificCERNSLC #SET
+    cream_default_var_ce_os_arch: &cream_default_var_ce_os_arch "x86_64"
+    #cream_default_var_ce_os_release: &cream_default_var_ce_os_release "6.8" #SET
+    #cream_default_var_ce_os_version: &cream_default_var_ce_os_version Carbon #SET
+    cream_default_var_ce_otherdescr: &cream_default_var_ce_otherdescr "Cores=4"
+    cream_default_var_ce_outboundip: &cream_default_var_ce_outboundip true
+    cream_default_var_ce_physcpu: &cream_default_var_ce_physcpu 0
+    cream_default_var_ce_runtimeenv: &cream_default_var_ce_runtimeenv EMI-3 #SET
+    cream_default_var_ce_sf00: &cream_default_var_ce_sf00 0
+    cream_default_var_ce_si00: &cream_default_var_ce_si00 381
+    cream_default_var_ce_smpsize: &cream_default_var_ce_smpsize 8
+    #batch_server str() #value needs to be hostname of container
+    #cream_default_var_job_manager: &cream_default_var_job_manager pbs #SET
+    #cream_default_var_ce_batch_sys: &cream_default_var_ce_batch_sys torque #SET
+    cream_default_var_batch_log_dir: &cream_default_var_batch_log_dir "/var/spool/pbs" #SET
+    #cream_default_var_batch_version: &cream_default_var_batch_version 2.5.13-1cri.9nik #SET
+    cream_default_var_blparser_with_updater_notifier: &cream_default_var_blparser_with_updater_notifier true
+    cream_default_var_blparser_host: &cream_default_var_blparser_host 
+        __from__: *cream_runtime_var_ce_host
+    cream_default_var_cemon_host: &cream_default_var_cemon_host 
+        __from__: *cream_runtime_var_ce_host
+    cream_default_var_cream_db_user: &cream_default_var_cream_db_user cream
+    #cream_db_password str()
+    cream_default_var_apel_mysql_host: &cream_default_var_apel_mysql_host 
+        __from__: *cream_runtime_var_ce_host
+    #apel_db_password
+    cream_default_var_ce_close_se: &cream_default_var_ce_close_se SE3
+    cream_default_var_ce_close_se3_access_point: &cream_default_var_ce_close_se3_access_point "/not/used" #check
+    cream_default_var_ce_close_se3_host: &cream_default_var_ce_close_se3_host "not-used.some-domain" #check
+    cream_default_var_se_list: &cream_default_var_se_list 
+        __from__: *cream_default_var_ce_close_se3_host
+    cream_default_var_se_mount_info_list: &cream_default_var_se_mount_info_list "none"
+
+
+
+wn-pbs-expected-from-site-level-config:
+    pbs_default_var_px_host: &pbs_default_var_px_host myproxy.cern.ch
+    pbs_default_var_ce_host: &pbs_default_var_ce_host
+      __from__: *pbs_runtime_var_ce_host
+    pbs_default_var_ce_smpsize: &pbs_default_var_ce_smpsize 8
+    pbs_default_var_batch_server: &pbs_default_var_batch_server 
+      __from__: *pbs_runtime_var_ce_host
+    pbs_default_var_ce_close_se: &pbs_default_var_ce_close_se SE3
+    pbs_default_var_ce_close_se3_access_point: &pbs_default_var_ce_close_se3_access_point /not/used
+    pbs_default_var_ce_close_se3_host: &pbs_default_var_ce_close_se3_host not-used.some-domain
+    pbs_default_var_se_list: &pbs_default_var_se_list
+      __from__: *pbs_default_var_ce_close_se3_host
+    pbs_default_var_se_mount_info_list: &pbs_default_var_se_mount_info_list none
+
+### Variable declaration:
+vars:
+  - &lightweight_component01_ip_address 192.168.0.4
+  - &lightweight_component02_ip_address 192.168.0.5
+
+site:
+  name: 'simple-dev-site'
+  email: 'mayank.sharma@cern.ch'
+  latitude: 46.3
+  longitude: 6.2
+  location: CERN, Geneva, Switzerland
+  description: 'A demo site demonstrating the SIMPLE framework for site setup'
+  website: 'https://home.cern'
+  support_website: 'https://groups.google.com/forum/#!forum/wlcg-lightweight-sites'
+  support_email: 'mayank.sharma@cern.ch'
+  security_email: 'mayank.sharma@cern.ch'
+  grid: 'wlcg' #site_other_grid: str(), wlcg, egi,osg
+  tier: 3
+  bdii_host: bdii.cern.ch
+  use_argus: false
+
+preferred_tech_stack:
+  level_1_configuration: puppet
+  level_2_configuration: puppet
+  container_orchestration: docker-swarm
+  container: docker
+
+site_infrastructure:
+  - fqdn: lightweight_component01.cern.ch
+    ip_address: *lightweight_component01_ip_address
+  - fqdn: lightweight_component02.cern.ch
+    ip_address: *lightweight_component02_ip_address
+
+lightweight_components:
+  - type: compute_element
+    name: Cream-CE
+    repository_url: "https://github.com/WLCG-Lightweight-Sites/wlcg_lightweight_site_ce_cream"
+    repository_revision: "master"
+    execution_id: 0
+    lifecycle_hooks:
+      pre_config:
+        - /etc/simple_grid/lifecycle/ce_pre_config.sh
+      pre_init:
+        - /etc/simple_grid/lifecycle/ce_pre_inst1.sh
+      post_init:
+        - /etc/simple_grid/lifecycle/ce_post_inst1.sh
+    deploy:
+      - node: lightweight_component01.cern.ch
+        container_count: 1
+    preferred_tech_stack:
+      level_2_configuration: yaim
+    config:
+        mysql_password: fteu5746hg
+        ce_cpu_model: *cream_default_var_ce_cpu_model
+        ce_cpu_speed: 3000
+        ce_cpu_vendor: Intel
+        ce_os_arch: str() #move back to node definitions?
+        ce_physcpu: 0
+        blparser_with_updater_notifier: true
+        cream_db_user: str()
+        cream_db_password: str()
+        apel_db_password: str()
+        queues:
+          alice:
+            - voms_fqan: '/alice'
+              pool_accounts:
+                - *default_pool_accounts_alice
+              vo: *default_vo_alice
+            - voms_fqan: '/alice/ROLE=lcgadmin'
+              pool_accounts:
+                - *default_pool_accounts_alice
+                - *default_pool_accounts_alicesgm
+              vo: *default_vo_alice
+    supplemental_config:
+          some_additional_parameter: some_value
+
+  - name: WN-Pbs
+    type: worker_node
+    repository_url: "https://github.com/WLCG-Lightweight-Sites/wlcg_lightweight_site_wn_pbs"
+    repository_revision: "master"
+    execution_id: 1
+    lifecycle_hooks:
+      pre_config:
+        - /etc/simple_grid/lifecycle/wn_pre_config.sh
+      pre_init:
+        - /etc/simple_grid/lifecycle/wn_pre_inst1.sh
+      post_init:
+        - /etc/simple_grid/lifecycle/wn_post_inst1.sh
+    deploy:
+      - node: lightweight_component02.cern.ch
+        container_count: 2
+    preferred_tech_stack:
+      level_2_configuration: yaim
+    config:
+        ce_host: *pbs_runtime_var_ce_host
+        batch_server: pbs
+    supplemental_config:
+      some_additional_parameter: some_value
+
+supported_virtual_organizations:
+  - *default_vo_alice
+  - *default_vo_dteam
+  - *default_vo_ops
+
+voms_config:
+  - voms_fqan: '/alice'
+    pool_accounts:
+      - *default_pool_accounts_alice
+    vo: *default_vo_alice
+  - voms_fqan: '/alice/ROLE=lcgadmin'
+    pool_accounts:
+      - *default_pool_accounts_alice
+      - *default_pool_accounts_alicesgm
+    vo: *default_vo_alice
+    comment: sgm
+  - voms_fqan: '/dteam'
+    pool_accounts:
+      - *default_pool_accounts_dteam
+    vo: *default_vo_dteam
+  - voms_fqan: '/dteam/ROLE=lcgadmin'
+    pool_accounts:
+      - *default_pool_accounts_dteamsgm
+      - *default_pool_accounts_dteam
+    vo: *default_vo_dteam
+    comment: sgm
+  - voms_fqan: '/ops'
+    vo: *default_vo_ops
+    pool_accounts:
+      - *default_pool_accounts_ops
+  - voms_fqan: '/ops/ROLE=lcgadmin'
+    pool_accounts:
+      - *default_pool_accounts_opssgm
+      - *default_pool_accounts_ops
+    vo: *default_vo_ops
+    comment: sgm
+
+#  - gid: 1395
+#    name: *default_group_alice_name
+#    accepted_voms_extensions:
+#      vo: 'alice' # add_vo_name_in_default_config
+#      group: ''
+#      role: ''
+#      category: ''
+#  - gid: 1397
+#    name: *default_group_alicesgm_name
+#    priority_group: sgm
+#    accepted_voms_extensions: '/alice/ROLE=lcgadmin'
+#  - *default_group_dteam
+#  - *default_group_dteamsgm
+#  - *default_group_ops
+#  - <<: *default_group_opssgm
+#    gid: 2018
+
+#pool_accounts:
+#  - base_name: 'alice'
+#    initial_uid: '10417'
+#    users_num: '5'
+#    primary_group: *default_group_alice_name
+#  - base_name: 'sgmali'
+#    initial_uid: '60101'
+#    users_num: '10'
+#    primary_group: *default_group_alicesgm_name
+#    secondary_group: *default_group_alice_name
+#  - *default_pool_account_dteam
+#  - *default_pool_account_ops
+
+
+

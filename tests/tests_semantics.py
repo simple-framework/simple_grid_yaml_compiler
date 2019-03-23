@@ -1,19 +1,17 @@
 from compiler.semantics import check_yaml_syntax
 import unittest
+from yamllint.config import YamlLintConfig
+from yamllint import linter
 
-class MyTest(unittest.TestCase):
-    def test(self):
-        input = """
-        lightweight_components:
-  - type: compute_element
-    repository_url: "https://github.com/WLCG-Lightweight-Sites/wlcg_lightweight_site_ce_cream"
-    nodes:
-      - node: lw-site-droplet-0
-        container_count: 1
-      - node: ec2-18-184-37-92.eu-central-1
-        container_count: 2
-    preferred_tech_stack:
-      level_2_configuration: yaim
-      """    
+class TestSemantics(unittest.TestCase):
+  conf = YamlLintConfig('extends: relaxed')
 
-        self.assertEqual(input, input)
+  def test_check_yaml_syntax(self):   
+    augmented_yaml_file = check_yaml_syntax('./data/runtime.yaml')
+    file = open(augmented_yaml_file)
+    gen = linter.run(file,self.conf)
+    errors = list(gen)
+    self.assertEqual(errors,[])
+
+if __name__ == '__main__':
+    unittest.main()
