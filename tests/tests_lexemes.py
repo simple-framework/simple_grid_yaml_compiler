@@ -4,7 +4,7 @@ import unittest
 
 class Test_get_repo_list(unittest.TestCase):
     def test(self):
-        
+      
         with open("./tests/resources/complete_config.yaml", "r") as f:
             self.assertEqual(
                     get_repo_list(f), 
@@ -63,4 +63,3 @@ class Test_parse_for_variable_hierarchies(unittest.TestCase):
         result.insert(1, "someseq", "to")
 
         self.assertEqual(result, parse_for_variable_hierarchies(c1, "__from__"))
-

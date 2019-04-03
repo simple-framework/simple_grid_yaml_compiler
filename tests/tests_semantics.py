@@ -16,4 +16,4 @@ class MyTest(unittest.TestCase):
       level_2_configuration: yaim
       """    
 
-        self.assertEqual(input, input)
+        #self.assertEqual(input, input)
