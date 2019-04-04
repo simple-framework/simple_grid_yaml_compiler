@@ -7,7 +7,7 @@ class Test_get_repo_list(unittest.TestCase):
       
         with open("./tests/resources/complete_config.yaml", "r") as f:
             self.assertEqual(
-                    get_repo_list(f), 
+                    get_repo_list(f),
                     [
                         "https://github.com/WLCG-Lightweight-Sites/wlcg_lightweight_site_ce_cream",
                         "https://github.com/WLCG-Lightweight-Sites/wlcg_lightweight_site_wn_pbs"
@@ -26,7 +26,6 @@ class Test_parse_for_variable_hierarchies(unittest.TestCase):
         c = CommentedSeq()
         c.insert(0, "key")
         c.insert(1, "to")
-        
         c2 = CommentedMap()
         c2.insert(0, "to", "from")
         c2.insert(1, "__from__", "to")
