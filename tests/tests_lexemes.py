@@ -18,8 +18,7 @@ class Test_parse_for_variable_hierarchies(unittest.TestCase):
     def test_data_type_neither_CommentedSeq_nor_CommentedMap(self):
 
         data = dict({})
-        self.assertEqual(data, parse_for_variable_hierarchies(data, "__from__"))
-    
+        self.assertEqual(data, parse_for_variable_hierarchies(data, "__from__"))  
 
     def test_datatype_is_CommentedSeq(self):
 
