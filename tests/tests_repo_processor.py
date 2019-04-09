@@ -1,4 +1,4 @@
-from compiler.repo_processor import analyse_repo_url, generate_default_file_name, generate_config_schema_file_name, generate_meta_info_file_name, get_default_values, get_config_schema, get_meta_info, augment_meta_info, generate_meta_info_parent_name
+from compiler.repo_processor import analyse_repo_url, generate_file_name, augment_meta_info, generate_meta_info_parent_name, get_repository_file
 
 from os import mkdir, remove
 from shutil import rmtree
@@ -27,7 +27,7 @@ class RepoProcessorTest(unittest.TestCase):
 
 		expected_output = "./.temp/simple_grid_yaml_compiler_defaults.yaml"
 
-		self.assertEqual(generate_default_file_name(repo_info), expected_output)
+		self.assertEqual(generate_file_name(repo_info, "site_level_configuration_defaults.yaml"), expected_output)
 
 	def test_generate_config_schema_file_name(self):
 		repo_info = {
@@ -38,7 +38,7 @@ class RepoProcessorTest(unittest.TestCase):
 
 		expected_output = "./.temp/simple_grid_yaml_compiler_schema.yaml"
 
-		self.assertEqual(generate_config_schema_file_name(repo_info), expected_output)
+		self.assertEqual(generate_file_name(repo_info, "config-schema.yaml"), expected_output)
 
 	def test_generate_meta_info_file_name(self):
 		repo_info = {
@@ -49,13 +49,13 @@ class RepoProcessorTest(unittest.TestCase):
 
 		expected_output = "./.temp/simple_grid_yaml_compiler_info.yaml"
 
-		self.assertEqual(generate_meta_info_file_name(repo_info), expected_output)
+		self.assertEqual(generate_file_name(repo_info, "meta-info.yaml"), expected_output)
 
 	def test_get_default_values(self):
 		repo_url      = "https://github.com/WLCG-Lightweight-Sites/simple_grid_site_defaults"
 		defaults_file = "site_level_configuration_defaults.yaml"
 
-		fname  = get_default_values(repo_url, defaults_file)
+		fname  = get_repository_file(repo_url, defaults_file)
 
 		with open(fname, "r") as file:
 			output = file.read()
@@ -68,10 +68,10 @@ class RepoProcessorTest(unittest.TestCase):
 	def test_get_config_schema(self):
 		repo_url = "https://github.com/WLCG-Lightweight-Sites/wlcg_lightweight_site_ce_cream"
 
-		get_config_schema(repo_url)
+		get_repository_file(repo_url, "config-schema.yaml")
 
 		repo_info = analyse_repo_url(repo_url)
-		fname     = generate_config_schema_file_name(repo_info)
+		fname     = generate_file_name(repo_info, "config-schema.yaml")
 
 		with open(fname, "r") as file:
 			output = file.read()
@@ -84,10 +84,10 @@ class RepoProcessorTest(unittest.TestCase):
 	def test_get_meta_info(self):
 		repo_url = "https://github.com/WLCG-Lightweight-Sites/wlcg_lightweight_site_ce_cream"
 
-		get_meta_info(repo_url)
+		get_repository_file(repo_url, "meta-info.yaml",True)
 
 		repo_info = analyse_repo_url(repo_url)
-		fname     = generate_meta_info_file_name(repo_info)
+		fname     = generate_file_name(repo_info, "meta-info.yaml")
 
 		with open(fname, "r") as file:
 			output = file.read()
