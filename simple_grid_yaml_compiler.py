@@ -10,14 +10,14 @@ from shutil import copyfile
 # OUTPUT: include statements for default files and meta-info files of repositories + raw site level-config file
 def phase_1(site_level_configuration_file):
     # fetch repo and get default_values.yaml
-    main_default_values_file = repo_processor.get_default_values("https://github.com/WLCG-Lightweight-Sites/simple_grid_site_defaults", "site_level_configuration_defaults.yaml" )
+    main_default_values_file = repo_processor.get_repository_file("https://github.com/WLCG-Lightweight-Sites/simple_grid_site_defaults", "site_level_configuration_defaults.yaml" )
     repo_urls = lexemes.get_repo_list(site_level_configuration_file)
     print(repo_urls)
     file_names_repository_default = [main_default_values_file]
     file_names_repository_meta = []
     for url in repo_urls:
-        file_names_repository_default.append(repo_processor.get_default_values(url, 'default-data.yaml'))
-        file_names_repository_meta.append(repo_processor.get_meta_info(url).name)
+        file_names_repository_default.append(repo_processor.get_repository_file(url, 'default-data.yaml'))
+        file_names_repository_meta.append(repo_processor.get_repository_file(url, 'meta-info.yaml', True).name)
     all_includes = file_names_repository_meta + file_names_repository_default
     includes_yaml_file = yaml_augmentation.add_include_statements(all_includes, site_level_configuration_file)
     return includes_yaml_file, repo_urls
@@ -54,15 +54,15 @@ def phase_5(phase_4_output, runtime_vars, yaml):
                 for component_section in lightweight_component:
                     if component_section == 'config':
                         repo_url = lightweight_component['repository_url']
-                        repo_processor.get_config_schema(repo_url)
-                        repo_processor.get_meta_info(repo_url)
+                        repo_processor.get_repository_file(repo_url, 'config-schema.yaml')
+                        repo_processor.get_repository_file(repo_url, 'meta-info.yaml', True)
                         repo_info = repo_processor.analyse_repo_url(repo_url)
-                        config_schema_file_name = repo_processor.generate_config_schema_file_name(repo_info)
+                        config_schema_file_name = repo_processor.generate_file_name(repo_info, 'config-schema.yaml')
                         config_schema_file = open(config_schema_file_name, 'r')
-                        meta_info_file = repo_processor.generate_meta_info_file_name(repo_info)
+                        meta_info_file = repo_processor.generate_file_name(repo_info, 'meta-info.yaml')
                         meta_info_parent_name = repo_processor.generate_meta_info_parent_name(meta_info_file)
                         meta_info = data[meta_info_parent_name]
-                        default_data_file_name = repo_processor.generate_default_file_name(repo_info)
+                        default_data_file_name = repo_processor.generate_file_name(repo_info, 'default-data.yaml')
                         default_data_runtime_file = open(default_data_file_name + ".runtime", 'w')
                         default_data_file = open(default_data_file_name, 'r')
                         default_data_runtime_file.write(runtime_vars)
