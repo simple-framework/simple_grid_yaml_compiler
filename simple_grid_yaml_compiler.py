@@ -10,11 +10,13 @@ from shutil import copyfile
 # OUTPUT: include statements for default files and meta-info files of repositories + raw site level-config file
 def phase_1(site_level_configuration_file):
     # fetch repo and get default_values.yaml
+    # TODO find 'schema:url' in site_level_configuration_file
+    # TODO Get schema, default values and meta info for site level schema
     main_default_values_file = repo_processor.get_default_values("https://github.com/WLCG-Lightweight-Sites/simple_grid_site_defaults", "site_level_configuration_defaults.yaml" )
     repo_urls = lexemes.get_repo_list(site_level_configuration_file)
     print(repo_urls)
-    file_names_repository_default = [main_default_values_file]
-    file_names_repository_meta = []
+    file_names_repository_default = [main_default_values_file] # TODO append default values for site level schema
+    file_names_repository_meta = [] # TODO append meta info for the schema
     for url in repo_urls:
         file_names_repository_default.append(repo_processor.get_default_values(url, 'default-data.yaml'))
         file_names_repository_meta.append(repo_processor.get_meta_info(url).name)
@@ -22,6 +24,12 @@ def phase_1(site_level_configuration_file):
     includes_yaml_file = yaml_augmentation.add_include_statements(all_includes, site_level_configuration_file)
     return includes_yaml_file, repo_urls
 
+def phase_1_schema_augmentation(site_level_schema_file, site_level_config_file , repo_urls):
+    # TODO check if component_repository_schema() is present in the config section of lightweight_components in the site_level_schema_file. If yes,
+    #  for each repo in the lightweight_component section of site level config file, create a new 'lightweight_component' schema element. For the lightweght component schema element, add a include: '{repo's downloaded}_config-schema.yaml' under the config section.
+    #  Add this lightweight_component schema element to the 'lightweight_components' schema element in the site_level_config_schema.
+
+    pass
 # add data from all includes
 # INPUT: include statements for default files of repositories + include statements for meta-info.yaml's +  raw site level-config file
 # PROCESS: recursively replace include statements with contents of the files that are to be included.
@@ -35,12 +43,18 @@ def phase_3(include_made):
     return runtime_vars, runtime_variables.add_runtime_variables(runtime_vars, config_file)
 
 
+def phase_3_schema(inlude_made_schema):
+    # TODO Process the include: '{repo's downloaded}_config-schema.yaml' statements to generate an augmented site level schema. Output oof phase_1_schema.yaml
+    pass
+
 # syntax_checking
 def phase_4(final_yaml_file):
+    # TODO modify function to do a semantics check on site_level_config_schema as well.
     return semantics.check_yaml_syntax(final_yaml_file)
 
 
 def phase_5(phase_4_output, runtime_vars, yaml):
+    # TODO modify function to process the entire site level config schema with the entire site level config file and insert final values for parameters.
     phase_4_output_file = open(phase_4_output.name, 'r')
     phase_5_output_file = open("./.temp/phase_5_output.yaml", 'w')
     data = yaml.load(phase_4_output_file)
@@ -100,6 +114,7 @@ def phase_6(phase_5_output_file, yaml):
     yaml.dump(with_ids, phase_6_output_file)
     return phase_6_output_file
 
+# TODO new function (phase_7) to convert simple's site_level_schema to a yamale site level schema.
 
 
 def parse_args():
