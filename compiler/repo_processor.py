@@ -18,7 +18,7 @@ def analyse_repo_url(repo_url):
     repo_analysis = re.search('//.*/(.*)/(.*)', repo_url)
     org_name = repo_analysis.group(1)
     repo_name = repo_analysis.group(2)
-    ##TODO fetch branch info
+    #TODO fetch branch info
     branch = 'master'
     return {
         'org_name':org_name,
