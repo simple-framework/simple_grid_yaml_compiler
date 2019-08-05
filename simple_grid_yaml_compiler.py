@@ -1,4 +1,4 @@
-from compiler import lexemes, semantics, yaml_augmentation, repo_processor, runtime_variables, processor_config_schemas
+from compiler import lexemes, semantics, yaml_augmentation, repo_processor, runtime_variables, processor_config_schemas, yamale_converter
 import argparse
 from ruamel.yaml import YAML
 from shutil import copyfile
@@ -114,17 +114,37 @@ def phase_6(phase_5_output_file, yaml):
     yaml.dump(with_ids, phase_6_output_file)
     return phase_6_output_file
 
+def phase_7(yamale_flie, config_file):
+    yaml = YAML()
 
+    base_repo_info     = repo_processor.analyse_repo_url(constants.BASE_REPO_URL)
+    config_schema_file = repo_processor.get_file_location(base_repo_info, "config_schema")
+
+    lc_schemas = set()
+
+    config_file = open(config_file, "r")
+    config = yaml.load(config_file)
+
+    for lc in config["lightweight_components"]:
+        lc_url    = lc["repository_url"]
+        lc_info   = repo_processor.analyse_repo_url(lc_url)
+        lc_schema = repo_processor.get_file_location(lc_info, "config_schema")
+
+        lc_schemas.add(lc_schema)
+
+    yamale_converter.yamale_converter(config_schema_file, yamale_flie, lc_schemas)
 
 def parse_args():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('filename')
     parser.add_argument('-o', '--output')
+    parser.add_argument('-s', '--schema')
     args = parser.parse_args()
     return {
         'site_level_configuration_file': args.filename,
-        'output': args.output
+        'output': args.output,
+        'schema': args.schema
     }
 
 if __name__ == "__main__":
@@ -147,3 +167,6 @@ if __name__ == "__main__":
     phase_6_output = phase_6(phase_5_output_file, yaml)
     copyfile(phase_6_output.name, output.name)
     output.close()
+
+    # Yamale schema generation
+    phase_7(args['schema'], output.name)
