@@ -147,7 +147,7 @@ def parse_args():
         'schema': args.schema
     }
 
-def execute_compiler(site_level_configuration_file, output):
+def execute_compiler(site_level_configuration_file, output, schema):
     yaml = YAML()
     phase_1_output, repo_urls = phase_1(site_level_configuration_file)
     phase_2_output = phase_2(phase_1_output)
@@ -159,11 +159,12 @@ def execute_compiler(site_level_configuration_file, output):
     output.close()
 
     # Yamale schema generation
-    phase_7(args['schema'], output.name)
+    phase_7(schema, output.name)
 
 if __name__ == "__main__":
 
     args = parse_args()
     site_level_configuration_file = open(args['site_level_configuration_file'], 'r')
     output = open(args['output'], 'w')
-    execute_compiler(site_level_configuration_file, output)
+    schema = args['schema']
+    execute_compiler(site_level_configuration_file, output, schema)
