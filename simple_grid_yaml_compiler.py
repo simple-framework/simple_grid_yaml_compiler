@@ -147,22 +147,12 @@ def parse_args():
         'schema': args.schema
     }
 
-if __name__ == "__main__":
-
-    args = parse_args()
-    site_level_configuration_file = open(args['site_level_configuration_file'], 'r')
-    output = open(args['output'], 'w')
+def execute_compiler(site_level_configuration_file, output):
     yaml = YAML()
     phase_1_output, repo_urls = phase_1(site_level_configuration_file)
     phase_2_output = phase_2(phase_1_output)
     runtime_vars, phase_3_output = phase_3(phase_2_output)
     phase_4_output = phase_4(phase_3_output)
-    # augmented_yaml_file = phase_3(open('./.temp/runtime.yaml', 'r'), output)
-    augmented_yaml_file = open(phase_4_output.name, 'r')
-    # data =yaml.load(augmented_yaml_file)
-    # print data['lightweight_components'][0]['config']['cream-info']['ce_cpu_model']
-    # print data['supported_virtual_organizations']
-    # print data['site']['latitude']
     phase_5_output_file = phase_5(phase_4_output, runtime_vars, yaml)
     phase_6_output = phase_6(phase_5_output_file, yaml)
     copyfile(phase_6_output.name, output.name)
@@ -170,3 +160,10 @@ if __name__ == "__main__":
 
     # Yamale schema generation
     phase_7(args['schema'], output.name)
+
+if __name__ == "__main__":
+
+    args = parse_args()
+    site_level_configuration_file = open(args['site_level_configuration_file'], 'r')
+    output = open(args['output'], 'w')
+    execute_compiler(site_level_configuration_file, output)
