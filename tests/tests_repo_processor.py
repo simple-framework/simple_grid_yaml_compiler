@@ -84,7 +84,7 @@ class RepoProcessorTest(unittest.TestCase):
 	def test_get_meta_info(self):
 		repo_url = "https://github.com/WLCG-Lightweight-Sites/wlcg_lightweight_site_ce_cream"
 
-		get_repo_file(repo_url, "meta-info.yaml", "meta_info", augment_meta_info)
+		get_repo_file(repo_url, "meta-info.yaml", "meta_info", post_func=augment_meta_info)
 
 		repo_info = analyse_repo_url(repo_url)
 		fname     = get_file_location(repo_info, "meta_info")

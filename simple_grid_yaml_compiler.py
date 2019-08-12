@@ -163,10 +163,14 @@ def execute_compiler(site_level_configuration_file, output, schema):
     # Yamale schema generation
     phase_7(schema, output.name)
 
-if __name__ == "__main__":
 
+def main():
     args = parse_args()
     site_level_configuration_file = open(args['site_level_configuration_file'], 'r')
     output = open(args['output'], 'w')
     schema = args['schema']
     execute_compiler(site_level_configuration_file, output, schema)
+
+
+if __name__ == "__main__":
+    main()
