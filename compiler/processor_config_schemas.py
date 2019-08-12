@@ -20,6 +20,7 @@ def lookup(data, parameter):
         pass
     return value
 
+
 def lookup_defaults(default_data, meta_info, parameter):
     default_value = None
     #try:

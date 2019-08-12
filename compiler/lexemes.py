@@ -4,12 +4,26 @@ from ruamel.yaml.comments import CommentedSeq, CommentedMap
 
 def get_repo_list(site_level_configuration_file):
     urls = []
+    find_revision = False
+    pending_url = None
+    revision_line = None
     for line in site_level_configuration_file.readlines():
-        url_line = re.search('repository_url\w*:\w*(.*)', line)
-        if url_line is not None:
-            url_line_string = url_line.group()
-            url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', url_line_string)
-            urls.append(url[0])
+        if find_revision:
+            revision_line = re.search('repository_revision\w*:(.*)', line)
+            revision_line_string = revision_line.group(1)
+            urls.append({
+                'url': pending_url,
+                'revision': revision_line_string.strip().replace("\"", '').replace('\'', '')
+            })
+            pending_url = None
+            find_revision = False
+        else:
+            url_line = re.search('repository_url\w*:\w*(.*)', line)
+            if url_line is not None:
+                url_line_string = url_line.group()
+                url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', url_line_string)
+                pending_url = url[0]
+                find_revision = True
     return urls
 
 ##########################################################################

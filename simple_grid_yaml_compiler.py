@@ -11,15 +11,15 @@ import constants
 # OUTPUT: include statements for default files and meta-info files of repositories + raw site level-config file
 def phase_1(site_level_configuration_file):
     # fetch repo and get default_values.yaml
-    repo_processor.get_base_files(constants.BASE_REPO_URL)
-    main_default_values_file = repo_processor.get_repo_file("https://github.com/WLCG-Lightweight-Sites/simple_grid_site_defaults", "site_level_configuration_defaults.yaml", "defaults")
+    repo_processor.get_base_files(constants.BASE_REPO_URL, constants.BASE_REPO_REVISION)
+    main_default_values_file = repo_processor.get_repo_file(constants.BASE_REPO_URL, "site_level_configuration_defaults.yaml", "site_level_defaults", branch=constants.BASE_REPO_REVISION)
     repo_urls = lexemes.get_repo_list(site_level_configuration_file)
     print(repo_urls)
     file_names_repository_default = [main_default_values_file]
     file_names_repository_meta = []
     for url in repo_urls:
-        file_names_repository_default.append(repo_processor.get_repo_file(url, 'default-data.yaml', "defaults"))
-        file_names_repository_meta.append(repo_processor.get_repo_file(url, "meta-info.yaml", "meta_info", repo_processor.augment_meta_info))
+        file_names_repository_default.append(repo_processor.get_repo_file(url['url'], 'default-data.yaml', "defaults", branch=url['revision']))
+        file_names_repository_meta.append(repo_processor.get_repo_file(url['url'], "meta-info.yaml", "meta_info", branch=url['revision'], post_func=repo_processor.augment_meta_info))
     all_includes = file_names_repository_meta + file_names_repository_default
     includes_yaml_file = yaml_augmentation.add_include_statements(all_includes, site_level_configuration_file)
     return includes_yaml_file, repo_urls
@@ -47,7 +47,7 @@ def phase_5(phase_4_output, runtime_vars, yaml):
     phase_5_output_file = open("./.temp/phase_5_output.yaml", 'w')
     data = yaml.load(phase_4_output_file)
 
-    base_repo_info = repo_processor.analyse_repo_url(constants.BASE_REPO_URL)
+    base_repo_info = repo_processor.analyse_repo_url(constants.BASE_REPO_URL, constants.BASE_REPO_REVISION)
 
     base_repo_file = lambda x: repo_processor.get_file_location(base_repo_info, x)
 
@@ -68,9 +68,10 @@ def phase_5(phase_4_output, runtime_vars, yaml):
                 for component_section in lightweight_component:
                     if component_section == 'config':
                         repo_url = lightweight_component['repository_url']
-                        repo_processor.get_repo_file(repo_url, "config-schema.yaml", "config_schema")
-                        repo_processor.get_repo_file(repo_url, "meta-info.yaml", "meta_info", repo_processor.augment_meta_info)
-                        repo_info = repo_processor.analyse_repo_url(repo_url)
+                        repo_version = lightweight_component['repository_revision']
+                        repo_processor.get_repo_file(repo_url, "config-schema.yaml", "config_schema", branch=repo_version)
+                        repo_processor.get_repo_file(repo_url, "meta-info.yaml", "meta_info", branch=repo_version, post_func=repo_processor.augment_meta_info)
+                        repo_info = repo_processor.analyse_repo_url(repo_url, repo_version)
                         config_schema_file_name = repo_processor.get_file_location(repo_info, "config_schema")
                         config_schema_file = open(config_schema_file_name, 'r')
                         meta_info_file = repo_processor.get_file_location(repo_info, "meta_info")
@@ -117,7 +118,7 @@ def phase_6(phase_5_output_file, yaml):
 def phase_7(yamale_flie, config_file):
     yaml = YAML()
 
-    base_repo_info     = repo_processor.analyse_repo_url(constants.BASE_REPO_URL)
+    base_repo_info     = repo_processor.analyse_repo_url(constants.BASE_REPO_URL, constants.BASE_REPO_REVISION)
     config_schema_file = repo_processor.get_file_location(base_repo_info, "config_schema")
 
     lc_schemas = set()
@@ -127,7 +128,8 @@ def phase_7(yamale_flie, config_file):
 
     for lc in config["lightweight_components"]:
         lc_url    = lc["repository_url"]
-        lc_info   = repo_processor.analyse_repo_url(lc_url)
+        lc_revision = lc["repository_revision"]
+        lc_info   = repo_processor.analyse_repo_url(lc_url, lc_revision)
         lc_schema = repo_processor.get_file_location(lc_info, "config_schema")
 
         lc_schemas.add(lc_schema)
