@@ -15,7 +15,7 @@ def get_file_location(repo_info, file_type):
 
     return base + suffix[file_type]
 
-def analyse_repo_url(repo_url, revision):
+def analyse_repo_url(repo_url, revision="master"):
     repo_analysis = re.search('//.*/(.*)/(.*)', repo_url)
     org_name = repo_analysis.group(1)
     repo_name = repo_analysis.group(2)
