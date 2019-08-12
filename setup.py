@@ -84,6 +84,7 @@ setup(
         'console_scripts': ['simple_grid_yaml_compiler=simple_grid_yaml_compiler:main'],
     },
     install_requires=REQUIRED,
+    package_data={'': ['__version__.py']},
     include_package_data=True,
     license='Apache Software License',
     classifiers=[
