@@ -1,8 +1,11 @@
-from compiler import lexemes, semantics, yaml_augmentation, repo_processor, runtime_variables, processor_config_schemas, yamale_converter
+import os
+
+from compiler import lexemes
+from compiler import semantics, yaml_augmentation, repo_processor, runtime_variables, processor_config_schemas, yamale_converter
 import argparse
 from ruamel.yaml import YAML
 from shutil import copyfile
-import constants
+from simple_grid_yaml_compiler.compiler import constants
 
 
 # fetch repos, add include statement for the downloaded default_values.yaml
@@ -18,8 +21,10 @@ def phase_1(site_level_configuration_file):
     file_names_repository_default = [main_default_values_file]
     file_names_repository_meta = []
     for url in repo_urls:
-        file_names_repository_default.append(repo_processor.get_repo_file(url['url'], 'default-data.yaml', "defaults", branch=url['revision']))
-        file_names_repository_meta.append(repo_processor.get_repo_file(url['url'], "meta-info.yaml", "meta_info", branch=url['revision'], post_func=repo_processor.augment_meta_info))
+        file_names_repository_default.append(
+            repo_processor.get_repo_file(url['url'], 'default-data.yaml', "defaults", branch=url['revision']))
+        file_names_repository_meta.append(
+            repo_processor.get_repo_file(url['url'], "meta-info.yaml", "meta_info", branch=url['revision'], post_func=repo_processor.augment_meta_info))
     all_includes = file_names_repository_meta + file_names_repository_default
     includes_yaml_file = yaml_augmentation.add_include_statements(all_includes, site_level_configuration_file)
     return includes_yaml_file, repo_urls
@@ -104,7 +109,7 @@ def phase_6(phase_5_output_file, yaml):
     input_data = yaml.load(phase_5_output)
     phase_6_output_file = open("./.temp/phase_6_output.yaml", 'w')
     #pass 1
-    variable_hierarchies = lexemes.parse_for_variable_hierarchies(input_data,  "__from__")
+    variable_hierarchies = lexemes.parse_for_variable_hierarchies(input_data, "__from__")
     #pass 2
     split_config = yaml_augmentation.split_component_config(variable_hierarchies)
     #pass 3
@@ -169,6 +174,10 @@ def main():
     site_level_configuration_file = open(args['site_level_configuration_file'], 'r')
     output = open(args['output'], 'w')
     schema = args['schema']
+    cwd = os.getcwd()
+    temp_dir = "{cwd}/.temp".format(cwd=cwd)
+    if not os.path.exists(temp_dir):
+        os.mkdir(temp_dir)
     execute_compiler(site_level_configuration_file, output, schema)
 
 

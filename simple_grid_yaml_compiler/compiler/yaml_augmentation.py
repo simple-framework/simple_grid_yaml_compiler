@@ -1,6 +1,5 @@
 import re, copy
-from compiler import runtime_variables
-from ruamel.yaml.comments import CommentedSeq, CommentedMap
+from ruamel.yaml.comments import CommentedSeq
 
 
 def add_include_statements(files_path_array, site_level_configuration_file):

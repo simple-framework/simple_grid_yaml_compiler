@@ -1,2 +1,2 @@
 include *.txt
-include __version__.py
+include *.py

@@ -1,7 +1,6 @@
-from compiler.repo_processor import analyse_repo_url, get_file_location, augment_meta_info, generate_meta_info_parent_name, get_repo_file
+from simple_grid_yaml_compiler.compiler.repo_processor import analyse_repo_url, get_file_location, augment_meta_info, generate_meta_info_parent_name, get_repo_file
 
-from os import mkdir, remove
-from shutil import rmtree
+from os import remove
 from urllib2 import urlopen
 
 import unittest
@@ -111,7 +110,6 @@ class RepoProcessorTest(unittest.TestCase):
 		base_fname     = "./tests/data/meta_info.yaml"
 		test_fname     = "./.temp/meta_info.yaml"
 		expected_fname = "./tests/data/augmented_meta_info.yaml"
-
 		with open(base_fname, "r") as base, open(test_fname, "w") as test:
 			test.write(base.read())
 
@@ -121,7 +119,6 @@ class RepoProcessorTest(unittest.TestCase):
 			self.assertEqual(test.read(), expected.read())
 
 		remove(test_fname)
-
 	def test_generate_meta_info_parent_name(self):
 		fname = "./tests/data/meta_info.yaml"
 

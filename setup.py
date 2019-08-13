@@ -81,7 +81,7 @@ setup(
     # py_modules=['mypackage'],
 
     entry_points={
-        'console_scripts': ['simple_grid_yaml_compiler=simple_grid_yaml_compiler:main'],
+        'console_scripts': ['simple_grid_yaml_compiler=simple_grid_yaml_compiler.yaml_compiler:main'],
     },
     install_requires=REQUIRED,
     package_data={'': ['__version__.py']},

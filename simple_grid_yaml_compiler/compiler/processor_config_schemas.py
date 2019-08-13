@@ -1,5 +1,4 @@
 from ruamel.yaml import YAML
-from compiler.repo_processor import generate_meta_info_parent_name
 
 import re
 

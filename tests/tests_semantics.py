@@ -1,4 +1,3 @@
-from compiler.semantics import check_yaml_syntax
 import unittest
 
 class MyTest(unittest.TestCase):
