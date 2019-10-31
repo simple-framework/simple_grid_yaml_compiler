@@ -3,7 +3,7 @@ from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedSeq, CommentedMap
 
 def get_repo_list(site_level_configuration_file):
-    urls = []
+    all_urls = []
     find_revision = False
     pending_url = None
     revision_line = None
@@ -11,7 +11,7 @@ def get_repo_list(site_level_configuration_file):
         if find_revision:
             revision_line = re.search('repository_revision\w*:(.*)', line)
             revision_line_string = revision_line.group(1)
-            urls.append({
+            all_urls.append({
                 'url': pending_url,
                 'revision': revision_line_string.strip().replace("\"", '').replace('\'', '')
             })
@@ -24,7 +24,8 @@ def get_repo_list(site_level_configuration_file):
                 url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', url_line_string)
                 pending_url = url[0]
                 find_revision = True
-    return urls
+    unique_urls = [dict(y) for y in set(tuple(x.items()) for x in all_urls)]
+    return unique_urls
 
 ##########################################################################
 # Warning: Badass recursive way to replace all __from__ keywords correctly

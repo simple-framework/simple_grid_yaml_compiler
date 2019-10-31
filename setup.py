@@ -18,12 +18,12 @@ URL = 'https://github.com/WLCG-Lightweight-Sites/simple_grid_yaml_compiler'
 EMAIL = 'mayank.sharma@cern.ch'
 AUTHOR = 'Mayank Sharma'
 
-REQUIRED = [
-    'PyYaml',
-    'ruamel.ordereddict',
-    'ruamel.yaml',
-    'argparse'
-]
+thelibFolder = os.path.dirname(os.path.realpath(__file__))
+requirementPath = thelibFolder + '/requirements.txt'
+REQUIRED = [] # Examples: ["gunicorn", "docutils>=0.3", "lxml==0.5a7"]
+if os.path.isfile(requirementPath):
+    with open(requirementPath) as f:
+        REQUIRED = f.read().splitlines()
 
 here = os.path.abspath(os.path.dirname(__file__))
 
