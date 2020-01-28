@@ -14,11 +14,11 @@ You'll need Python 2.7 or higher.
 - Create a site_level_configuration_file.yaml in the root directory. You can use the one available in the [puppet module](https://github.com/WLCG-Lightweight-Sites/simple_grid_puppet_module/tree/master/templates).
 - Execute the compiler using the following command template from the root directory
 ```
-python simple_grid_yaml_compiler.py {PATH_TO_SITE_LEVEL_CONFIG_FILE} -o {PATH_TO_AUGMENTED_SITE_LEVEL_CONFIG_FILE}
+python simple_grid_yaml_compiler.py {PATH_TO_SITE_LEVEL_CONFIG_FILE} -o {PATH_TO_AUGMENTED_SITE_LEVEL_CONFIG_FILE} -s {PATH_TO_AUGMENTED_SITE_LEVEL_SCHEMA_FILE}
 ```
 For instance, 
 ```
-python simple_grid_yaml_compiler.py ./tests/resources/complete_config.yaml -o ./tests/output.yaml
+python simple_grid_yaml_compiler.py ./tests/resources/complete_config.yaml -o ./tests/output.yaml -s ./tests/schema.yaml
 ```
 - After running the compiler, the output would be generated at {PATH_TO_AUGMENTED_SITE_LEVEL_CONFIG_FILE}
 
