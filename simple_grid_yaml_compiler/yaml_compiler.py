@@ -1,4 +1,5 @@
 import os
+import tempfile
 
 from compiler import lexemes
 from compiler import semantics, yaml_augmentation, repo_processor, runtime_variables, processor_config_schemas, yamale_converter
@@ -6,6 +7,7 @@ import argparse
 from ruamel.yaml import YAML
 from shutil import copyfile
 from simple_grid_yaml_compiler.compiler import constants
+from simple_grid_yaml_compiler.utils.tempdir import tempdir
 
 
 # fetch repos, add include statement for the downloaded default_values.yaml
@@ -49,7 +51,7 @@ def phase_4(final_yaml_file):
 
 def phase_5(phase_4_output, runtime_vars, yaml):
     phase_4_output_file = open(phase_4_output.name, 'r')
-    phase_5_output_file = open("./.temp/phase_5_output.yaml", 'w')
+    phase_5_output_file = open(os.path.join(tempfile.gettempdir(), "phase_5_output.yaml"), 'w')
     data = yaml.load(phase_4_output_file)
 
     base_repo_info = repo_processor.analyse_repo_url(constants.BASE_REPO_URL, constants.BASE_REPO_REVISION)
@@ -107,7 +109,7 @@ def phase_5(phase_4_output, runtime_vars, yaml):
 def phase_6(phase_5_output_file, yaml):
     phase_5_output = open(phase_5_output_file.name, 'r')
     input_data = yaml.load(phase_5_output)
-    phase_6_output_file = open("./.temp/phase_6_output.yaml", 'w')
+    phase_6_output_file = open(os.path.join(tempfile.gettempdir(), "phase_6_output.yaml"), 'w')
     #pass 1
     variable_hierarchies = lexemes.parse_for_variable_hierarchies(input_data, "__from__")
     #pass 2
@@ -120,7 +122,7 @@ def phase_6(phase_5_output_file, yaml):
     yaml.dump(with_ids, phase_6_output_file)
     return phase_6_output_file
 
-def phase_7(yamale_flie, config_file):
+def phase_7(yamale_file, config_file):
     yaml = YAML()
 
     base_repo_info     = repo_processor.analyse_repo_url(constants.BASE_REPO_URL, constants.BASE_REPO_REVISION)
@@ -130,7 +132,7 @@ def phase_7(yamale_flie, config_file):
 
     config_file = open(config_file, "r")
     config = yaml.load(config_file)
-
+    # import pdb; pdb.set_trace()
     for lc in config["lightweight_components"]:
         lc_url    = lc["repository_url"]
         lc_revision = lc["repository_revision"]
@@ -139,7 +141,7 @@ def phase_7(yamale_flie, config_file):
 
         lc_schemas.add(lc_schema)
 
-    yamale_converter.yamale_converter(config_schema_file, yamale_flie, lc_schemas)
+    yamale_converter.yamale_converter(config_schema_file, yamale_file, lc_schemas)
 
 def parse_args():
 
@@ -147,11 +149,13 @@ def parse_args():
     parser.add_argument('filename')
     parser.add_argument('-o', '--output')
     parser.add_argument('-s', '--schema')
+    parser.add_argument('-t', '--temp')
     args = parser.parse_args()
     return {
         'site_level_configuration_file': args.filename,
         'output': args.output,
-        'schema': args.schema
+        'schema': args.schema,
+        'temp': args.temp
     }
 
 def execute_compiler(site_level_configuration_file, output, schema):
@@ -167,6 +171,10 @@ def execute_compiler(site_level_configuration_file, output, schema):
 
     # Yamale schema generation
     phase_7(schema, output.name)
+    output_contents = open(output.name, 'r').read()
+    schema_contents = open(schema, 'r').read()
+
+    return output_contents, schema_contents
 
 
 def main():
@@ -174,11 +182,12 @@ def main():
     site_level_configuration_file = open(args['site_level_configuration_file'], 'r')
     output = open(args['output'], 'w')
     schema = args['schema']
-    cwd = os.getcwd()
-    temp_dir = "{cwd}/.temp".format(cwd=cwd)
-    if not os.path.exists(temp_dir):
-        os.mkdir(temp_dir)
-    execute_compiler(site_level_configuration_file, output, schema)
+    if args['temp']:
+        tempfile.tempdir = args['temp']
+        execute_compiler(site_level_configuration_file, output, schema)
+    else:
+        with tempdir():
+            execute_compiler(site_level_configuration_file, output, schema)
 
 
 if __name__ == "__main__":

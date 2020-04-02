@@ -2,6 +2,10 @@
 ## mapped val is determined by yaml search query.
 ## basically ce_host should be moved to pre-config.py. It can be marked as pre-config.py replacable and therefore it is runtime.
 ## process the YAML file,
+import os
+import tempfile
+
+
 def extract_runtime_variables(includes_made):
     filename = includes_made.name
     site_config_with_includes = open(filename, 'r')
@@ -42,12 +46,11 @@ def extract_runtime_variables(includes_made):
         else:
             config_file += line
 
-
     return variables + runtime_vars, config_file
 
 
 def add_runtime_variables(runtime_vars, config_file):
-    output = open('./.temp/runtime.yaml', 'w')
+    output = open(os.path.join(tempfile.gettempdir(),'runtime.yaml'), 'w')
     output.write(runtime_vars + config_file)
     output.close()
     return output
