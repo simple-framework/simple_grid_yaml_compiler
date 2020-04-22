@@ -177,17 +177,22 @@ def execute_compiler(site_level_configuration_file, output, schema):
     return output_contents, schema_contents
 
 
+def yaml_compile(site_level_configuration_file, output, schema, temp=None):
+    if temp:
+        tempfile.tempdir = temp
+        execute_compiler(site_level_configuration_file, output, schema)
+    else:
+        with tempdir():
+            execute_compiler(site_level_configuration_file, output, schema)
+
 def main():
     args = parse_args()
     site_level_configuration_file = open(args['site_level_configuration_file'], 'r')
     output = open(args['output'], 'w')
     schema = args['schema']
-    if args['temp']:
-        tempfile.tempdir = args['temp']
-        execute_compiler(site_level_configuration_file, output, schema)
-    else:
-        with tempdir():
-            execute_compiler(site_level_configuration_file, output, schema)
+    temp = args['temp']
+
+    yaml_compile(site_level_configuration_file, output, schema, temp)
 
 
 if __name__ == "__main__":
