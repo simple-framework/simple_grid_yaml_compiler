@@ -1,9 +1,13 @@
-import re, copy
+import os
+import re
+import copy
+import tempfile
+
 from ruamel.yaml.comments import CommentedSeq
 
 
 def add_include_statements(files_path_array, site_level_configuration_file):
-        output = open('./.temp/site_level_configuration_file_unprocessed_includes', 'w')
+        output = open(os.path.join(tempfile.gettempdir(), 'site_level_configuration_file_unprocessed_includes'), 'w')
         for file_name in files_path_array:
             try:
                 output.write("include: '" + file_name + "'\n")
@@ -33,7 +37,7 @@ def expand_file_from_include_statements(augmented_yaml_file, yaml_file_to_be_exp
 
 
 def add_included_files(default_includes_yaml_file):
-    expanded_yaml_file = open('./.temp/expanded_yaml_file.yaml', 'w')
+    expanded_yaml_file = open(os.path.join(tempfile.gettempdir(), 'expanded_yaml_file.yaml'), 'w')
     expand_file_from_include_statements(expanded_yaml_file, default_includes_yaml_file.name)
     expanded_yaml_file.close()
     return expanded_yaml_file

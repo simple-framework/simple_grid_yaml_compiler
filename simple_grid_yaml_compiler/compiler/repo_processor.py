@@ -1,11 +1,13 @@
+import os
 import re
 import urllib2
 from urlparse import urlparse, urljoin
 import constants as constants
+import tempfile
 
 
 def get_file_location(repo_info, file_type):
-    base = "./.temp/" + repo_info["repo_name"]
+    base = os.path.join(tempfile.gettempdir(), repo_info["repo_name"])
 
     suffix = {
         "defaults": "_defaults.yaml",
